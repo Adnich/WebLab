@@ -10,11 +10,30 @@ exports.getAllTrips = async (req, res) => {
   }
 };
 
+// ✅ GET /trips/:id (TREBA za edit formu)
+exports.getTripById = async (req, res) => {
+  try {
+    const trip = await Trip.findByPk(req.params.id);
+    if (!trip) {
+      return res.status(404).json({ message: 'Trip not found.' });
+    }
+    res.json(trip);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching trip', error: err.message });
+  }
+};
+
 // POST /trips
 exports.addTrip = async (req, res) => {
   try {
-    const { id, destination, duration, travelerId } = req.body;
-    await Trip.create({ id, destination, duration, travelerId });
+    const { id, destination, duration, agencyId, imageUrl } = req.body;
+
+    // ✅ agencyId je obavezan
+    if (!id || !destination || !duration || !agencyId) {
+      return res.status(400).json({ message: "Missing required fields." });
+    }
+
+    await Trip.create({ id, destination, duration, agencyId, imageUrl });
     res.status(201).json({ message: 'Trip added successfully.' });
   } catch (err) {
     res.status(500).json({ message: 'Error adding trip', error: err.message });
@@ -25,7 +44,7 @@ exports.addTrip = async (req, res) => {
 exports.updateTrip = async (req, res) => {
   try {
     const { id } = req.params;
-    const { destination, duration, travelerId } = req.body;
+    const { destination, duration, agencyId, imageUrl } = req.body;
 
     const trip = await Trip.findByPk(id);
     if (!trip) {
@@ -34,7 +53,8 @@ exports.updateTrip = async (req, res) => {
 
     trip.destination = destination;
     trip.duration = duration;
-    trip.travelerId = travelerId;
+    trip.agencyId = agencyId;
+    trip.imageUrl = imageUrl;
     await trip.save();
 
     res.json({ message: 'Trip updated successfully.' });

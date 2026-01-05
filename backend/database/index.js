@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
 
 // Kreirajte novu Sequelize instancu, zamijenite vrijednosti sa svojim kredencijalima
-const sequelize = new Sequelize('travel_db', 'postgres', '1234', {
+const sequelize = new Sequelize('travel_db', 'postgres', 'Lozinka123', {
   host: 'localhost', // ili gdje vam je hostana baza
   dialect: 'postgres'
 });

@@ -1,4 +1,5 @@
 const Agency = require('../models/agency');
+const Trip = require('../models/trip');
 
 // GET /agencies
 exports.getAllAgencies = async (req, res) => {
@@ -28,9 +29,7 @@ exports.updateAgency = async (req, res) => {
     const { name, location } = req.body;
 
     const agency = await Agency.findByPk(id);
-    if (!agency) {
-      return res.status(404).json({ message: 'Agency not found.' });
-    }
+    if (!agency) return res.status(404).json({ message: 'Agency not found.' });
 
     agency.name = name;
     agency.location = location;
@@ -46,13 +45,23 @@ exports.updateAgency = async (req, res) => {
 exports.deleteAgency = async (req, res) => {
   try {
     const { id } = req.params;
+
     const agency = await Agency.findByPk(id);
-    if (!agency) {
-      return res.status(404).json({ message: 'Agency not found.' });
-    }
+    if (!agency) return res.status(404).json({ message: 'Agency not found.' });
+
     await agency.destroy();
     res.json({ message: 'Agency deleted successfully.' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting agency', error: err.message });
+  }
+};
+
+// ✅ GET /agencies/:id/trips
+exports.getAgencyTrips = async (req, res) => {
+  try {
+    const trips = await Trip.findAll({ where: { agencyId: req.params.id } });
+    res.json(trips);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching agency trips', error: err.message });
   }
 };

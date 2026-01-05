@@ -1,17 +1,16 @@
-// app.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-// Uvoz našeg sequelize objekta
 const sequelize = require('./database');
 
-// Uvoz modela (da se definicije "učitaju")
 const Traveler = require('./models/traveler');
 const Trip = require('./models/trip');
 const Agency = require('./models/agency');
 
-// Uvoz ruta
+Agency.hasMany(Trip, { foreignKey: "agencyId" });
+Trip.belongsTo(Agency, { foreignKey: "agencyId" });
+
 const travelerRoutes = require('./routes/travelerRoutes');
 const tripRoutes = require('./routes/tripRoutes');
 const agencyRoutes = require('./routes/agencyRoutes');
@@ -20,21 +19,19 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Rute
 app.use('/travelers', travelerRoutes);
 app.use('/trips', tripRoutes);
 app.use('/agencies', agencyRoutes);
 
-// Sinhronizacija modela sa bazom (ovo kreira tabele ako ne postoje)
-sequelize.sync()
-  .then(() => {
-    console.log('Modeli sinhronizirani sa bazom podataka.');
-    // Tek nakon što je sync gotov, startujemo server
-    const PORT = 3000;
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+
+sequelize.sync({ alter: true })
+    .then(() => {
+        console.log(' Modeli sinhronizirani sa bazom podataka.');
+        const PORT = 3000;
+        app.listen(PORT, () => {
+            console.log(` Server running on http://localhost:${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('❌ Greška pri sinhronizaciji modela:', err);
     });
-  })
-  .catch((err) => {
-    console.error('Greška pri sinhronizaciji modela:', err);
-  });

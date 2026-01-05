@@ -15,10 +15,17 @@ const Trip = sequelize.define('Trip', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  travelerId: {
-    type: DataTypes.STRING, // ili DataTypes.INTEGER
+
+  imageUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+
+  agencyId: {
+    type: DataTypes.STRING,
     allowNull: false
   }
+
 }, {
   tableName: 'trips',
   timestamps: false
