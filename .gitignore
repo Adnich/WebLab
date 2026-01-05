@@ -1,0 +1,11 @@
+# node
+node_modules/
+
+# ide
+.idea/
+
+# mac
+.DS_Store
+
+# env
+.env
