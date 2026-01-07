@@ -4,14 +4,17 @@ import "./App.css";
 
 export default function Home() {
   return (
-    <div className="home-page"  style={{
-                                   backgroundImage: "url(/planes.jpg)",
-                                   backgroundRepeat: "no-repeat",
-                                   backgroundPosition: "center",
-                                   backgroundSize: "cover",
-                                   minHeight: "100vh",
-                                   position: "relative"
-                                 }}>
+    <div
+      className="home-page"
+      style={{
+        backgroundImage: "url(/planes.jpg)",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        minHeight: "100vh",
+        position: "relative",
+      }}
+    >
       <div className="home-layout">
 
         {/* LEFT SIDE */}
