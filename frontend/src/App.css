@@ -307,3 +307,48 @@ body {
     max-width: 100%;
   }
 }
+
+/* =========================
+   AGENCIES – NAV + sitnice
+========================= */
+
+.nav-bar {
+  display: flex;
+  gap: 12px;
+  margin: 6px 0 22px;
+}
+
+.nav-btn {
+  background: #20b2aa;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(32, 178, 170, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(32, 178, 170, 0.30);
+}
+
+/* dodatno dugme za "Prikaži putovanja" */
+.btn-small.info {
+  background: #3b82f6;
+}
+
+/* lista putovanja unutar tabele (Akcije kolona) */
+.mini-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: #1f1f1f;
+}
+
+.mini-list li {
+  margin: 4px 0;
+  font-size: 13px;
+}
+
