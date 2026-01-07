@@ -1,75 +1,196 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import "./App.css";
 
-function Trips() {
-    const [trips, setTrips] = useState([]);
-    const navigate = useNavigate();
+export default function Trips() {
+  const [trips, setTrips] = useState([]);
+  const [agencies, setAgencies] = useState([]);
+  const [newTrip, setNewTrip] = useState({
+    id: "",
+    destination: "",
+    duration: "",
+    agencyId: "",
+    imageUrl: "",
+  });
 
-    const fetchTrips = async () => {
-        try {
-            const res = await axios.get("http://localhost:3000/trips");
-            setTrips(res.data);
-        } catch (err) {
-            console.error("Greška pri dohvaćanju putovanja:", err);
-        }
-    };
+  const navigate = useNavigate();
 
-    useEffect(() => {
+  useEffect(() => {
+    fetchTrips();
+    fetchAgencies();
+  }, []);
+
+  const fetchTrips = () => {
+    fetch("http://localhost:3000/trips")
+      .then((res) => res.json())
+      .then((data) => setTrips(data))
+      .catch((err) => console.error(err));
+  };
+
+  const fetchAgencies = () => {
+    fetch("http://localhost:3000/agencies")
+      .then((res) => res.json())
+      .then((data) => setAgencies(data))
+      .catch((err) => console.error(err));
+  };
+
+  const addTrip = (e) => {
+    e.preventDefault();
+
+    fetch("http://localhost:3000/trips", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newTrip),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setNewTrip({
+          id: "",
+          destination: "",
+          duration: "",
+          agencyId: "",
+          imageUrl: "",
+        });
         fetchTrips();
-    }, []);
+      })
+      .catch((err) => console.error(err));
+  };
 
-    return (
-        <div style={{ padding: "20px" }}>
-            <h1>Putovanja</h1>
+  const getAgencyName = (agencyId) => {
+    const a = agencies.find((x) => String(x.id) === String(agencyId));
+    return a ? a.name : agencyId;
+  };
 
-            {/* Dugmad */}
-            <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-                <button onClick={() => navigate("/")}>🏠 Početna</button>
-                <button onClick={() => navigate(-1)}>⬅ Nazad</button>
-            </div>
+  return (
+    <div
+      className="page"
+      style={{
+        backgroundImage: "url(/planes.jpg)",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        minHeight: "100vh",
+        position: "relative",
+      }}
+    >
+      {/* overlay */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(255,255,255,0.70)",
+          zIndex: 1,
+        }}
+      />
 
-            {/* Kartice */}
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                    gap: "15px"
-                }}
-            >
-                {trips.map((trip) => (
-                    <div
-                        key={trip.id}
-                        style={{
-                            border: "1px solid #ddd",
-                            borderRadius: "12px",
-                            overflow: "hidden",
-                            boxShadow: "0 3px 10px rgba(0,0,0,0.08)"
-                        }}
-                    >
-                        {/* Slika */}
-                        {trip.imageUrl && (
-                            <img
-                                src={trip.imageUrl}
-                                alt={trip.destination}
-                                style={{
-                                    width: "100%",
-                                    height: "160px",
-                                    objectFit: "cover"
-                                }}
-                            />
-                        )}
+      <div style={{ position: "relative", zIndex: 2 }}>
+        <h1 className="page-title">Putovanja</h1>
 
-                        <div style={{ padding: "12px" }}>
-                            <h3 style={{ margin: 0 }}>{trip.destination}</h3>
-                            <p style={{ margin: "6px 0" }}>Trajanje: {trip.duration} dana</p>
-                            <p style={{ margin: "6px 0" }}>Agencija ID: {trip.agencyId}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
+        {/* NAV */}
+        <div className="nav-bar">
+          <button className="nav-btn" onClick={() => navigate("/")}>
+            🏠 Početna
+          </button>
+          <button className="nav-btn" onClick={() => navigate(-1)}>
+            ← Nazad
+          </button>
         </div>
-    );
-}
 
-export default Trips;
+        {/* FORMA */}
+        <div className="card form-card" style={{ textAlign: "left" }}>
+          <h3>Dodaj putovanje</h3>
+
+          <form onSubmit={addTrip}>
+            <input
+              placeholder="ID"
+              value={newTrip.id}
+              onChange={(e) => setNewTrip({ ...newTrip, id: e.target.value })}
+              required
+            />
+
+            <input
+              placeholder="Destinacija"
+              value={newTrip.destination}
+              onChange={(e) =>
+                setNewTrip({ ...newTrip, destination: e.target.value })
+              }
+              required
+            />
+
+            <input
+              type="number"
+              placeholder="Trajanje (dani)"
+              value={newTrip.duration}
+              onChange={(e) =>
+                setNewTrip({ ...newTrip, duration: e.target.value })
+              }
+              required
+            />
+
+            <select
+              className="form-select"
+              value={newTrip.agencyId}
+              onChange={(e) =>
+                setNewTrip({ ...newTrip, agencyId: e.target.value })
+              }
+              required
+            >
+              <option value="">-- Izaberi agenciju --</option>
+              {agencies.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.name}
+                </option>
+              ))}
+            </select>
+
+            <input
+              placeholder="Image URL"
+              value={newTrip.imageUrl}
+              onChange={(e) =>
+                setNewTrip({ ...newTrip, imageUrl: e.target.value })
+              }
+            />
+
+            <button className="btn-primary" type="submit">
+              Dodaj putovanje
+            </button>
+          </form>
+        </div>
+
+        {/* LISTA */}
+        <div className="card table-card" style={{ textAlign: "left" }}>
+          <h3>Lista putovanja</h3>
+
+          {trips.length === 0 ? (
+            <p>Nema upisanih putovanja</p>
+          ) : (
+            <div className="trips-grid">
+              {trips.map((trip) => (
+                <div className="trip-card" key={trip.id}>
+                  {trip.imageUrl ? (
+                    <img
+                      src={trip.imageUrl}
+                      alt={trip.destination}
+                      className="trip-image"
+                    />
+                  ) : (
+                    <div className="trip-image placeholder" />
+                  )}
+
+                  <div className="trip-body">
+                    <div className="trip-title">{trip.destination}</div>
+                    <div className="trip-meta">Trajanje: {trip.duration} dana</div>
+                    <div className="trip-meta">
+                      Agencija: {getAgencyName(trip.agencyId)}
+                    </div>
+                    <div className="trip-id">ID: {trip.id}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
